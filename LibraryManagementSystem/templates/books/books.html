@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% extends 'base.html' %} {% block content %}
+<style>
+  .card {
+    background: linear-gradient(
+      135deg,
+      #5692b5ff,
+      #1b232fff
+    ); /* Gradient background */
+    color: #fff; /* White text for contrast */
+    border: none; /* Remove default border */
+    padding: 20px;
+    margin: 15px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow for pop */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+  }
+</style>
+{% comment %} This is a comment {% endcomment %}
+<h1>Welcome to the Book Section</h1>
+<div class="card">
+  <h1>Here are the book details:</h1>
+  {% if details %} {% for book in details %}
+  <div class="card">
+    <h3>Book Nmae: {{ book.title }}</h3>
+    <p>Author: {{ book.author }}</p>
+    <p>Publication : {{ book.publisher }}</p>
+    <p>Page: {{ book.pages }}</p>
+    <p>Publication Date : {{ book.published_date }}</p>
+  </div>
+  {% endfor %} {% else %}
+  <p>No books available.</p>
+  {% endif %}
+</div>
+{% endblock %}

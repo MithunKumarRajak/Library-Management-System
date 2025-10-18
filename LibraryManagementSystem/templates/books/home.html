@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Welcome to the Library Management System</h1>
+
+  <!-- Autoplaying Carousel -->
+  <div
+    id="carouselExampleAutoplaying"
+    class="carousel slide"
+    data-bs-ride="carousel"
+    data-bs-interval="3000"
+    data-bs-wrap="true"
+  >
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img
+          src="{% static 'images/naruto1.jpg' %}"
+          class="d-block w-100 carousel-image"
+          alt="Naruto 1"
+        />
+      </div>
+      <div class="carousel-item">
+        <img
+          src="{% static 'images/naruto2.avif' %}"
+          class="d-block w-100 carousel-image"
+          alt="Naruto 2"
+        />
+      </div>
+      <div class="carousel-item">
+        <img
+          src="{% static 'images/OIP.webp' %}"
+          class="d-block w-100 carousel-image"
+          alt="Naruto 3"
+        />
+      </div>
+      <div class="carousel-item">
+        <img
+          src="{% static 'images/OIP2.webp' %}"
+          class="d-block w-100 carousel-image"
+          alt="Naruto 3"
+        />
+      </div>
+      <div class="carousel-item">
+        <img
+          src="{% static 'images/OIP3.webp' %}"
+          class="d-block w-100 carousel-image"
+          alt="Naruto 3"
+        />
+      </div>
+    </div>
+
+    <!-- Carousel Controls -->
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#carouselExampleAutoplaying"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#carouselExampleAutoplaying"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+{% endblock %}

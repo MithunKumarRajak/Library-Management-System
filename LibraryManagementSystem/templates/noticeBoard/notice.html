@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Library Management System - Notice Board</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        padding: 20px;
+      }
+      .notice-card {
+        background: #fff;
+        border-left: 6px solid #4caf50;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      .notice-card h3 {
+        margin: 0;
+        color: #333;
+      }
+      .notice-card p {
+        margin: 5px 0 0;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Notice Board</h1>
+    <p>Welcome to the notice board.</p>
+
+    {% for notice in details %}
+    <div class="notice-card">
+      <h3>{{ notice.title }}</h3>
+      <p>{{ notice.details }}</p>
+      <p><strong>Date:</strong> {{ notice.posted_date }}</p>
+    </div>
+    {% empty %}
+    <p>No notices available.</p>
+    {% endfor %}
+  </body>
+</html>
