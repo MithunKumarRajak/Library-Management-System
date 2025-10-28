@@ -1,6 +1,6 @@
 # Library-Management-System
 
-# Django + Bootstrap Carousel Debug Summary
+## Django + Bootstrap Carousel Debug Summary
 
 ## What Went Wrong
 
@@ -14,15 +14,15 @@
 
 ---
 
-## ✅ How You Fixed It
+## How You Fixed It
 
 | Fix | Action |
 |-----|--------|
-| ✅ Uninstalled plugin | Removed `django-bootstrap-v5` using `pip uninstall` and deleted from `INSTALLED_APPS`. |
-| ✅ Switched to CDN | Used Bootstrap 5 via CDN for simplicity and speed. |
-| ✅ Loaded static tag | Added `{% load static %}` at the top of your template. |
-| ✅ Unified image sizes | Added `.carousel-image` class with `height: 500px` and `object-fit: cover`. |
-| ✅ Cleaned template | Removed unused attributes and simplified HTML structure. |
+| Uninstalled plugin | Removed `django-bootstrap-v5` using `pip uninstall` and deleted from `INSTALLED_APPS`. |
+| Switched to CDN | Used Bootstrap 5 via CDN for simplicity and speed. |
+| Loaded static tag | Added `{% load static %}` at the top of your template. |
+| Unified image sizes | Added `.carousel-image` class with `height: 500px` and `object-fit: cover`. |
+| Cleaned template | Removed unused attributes and simplified HTML structure. |
 
 ---
 
@@ -48,7 +48,7 @@
 - Use `{% load static %}` in every template that uses `{% static %}`.
 - Prefer CDN for Bootstrap unless you need offline or custom builds.
 - Use `object-fit: cover` to maintain image proportions and fill space evenly.
-<!-- ------------------------------------------------------------------------------------------------- -->
+<!------------------------------------------------------------------>
 
 ## 🛠️ Django TemplateSyntaxError Summary
 
@@ -95,4 +95,3 @@ Always double-check:
 - `{% block %}`, `{% endblock %}` structure
 - `{% comment %} ... {% endcomment %}` usage
 
----

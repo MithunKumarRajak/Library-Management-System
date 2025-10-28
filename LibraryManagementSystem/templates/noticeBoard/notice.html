@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block content %}
+<html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,9 +11,10 @@
         font-family: Arial, sans-serif;
         background: #f4f4f4;
         padding: 20px;
+        background: linear-gradient(135deg, #75d3a7ff, #3d738aff);
       }
       .notice-card {
-        background: #fff;
+        background: #6076b3ff;
         border-left: 6px solid #4caf50;
         padding: 15px;
         margin-bottom: 15px;
@@ -43,3 +46,4 @@
     {% endfor %}
   </body>
 </html>
+{% endblock %}
