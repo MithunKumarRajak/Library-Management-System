@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Smart Route Finder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Routing & Geocoder -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"
+    />
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <!-- Photon API for Autocomplete -->
+    <script src="https://unpkg.com/leaflet.photon/leaflet.photon.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.photon/leaflet.photon.css"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css"
+    />
+
+    <style>
+      :root {
+        --primary: #0078ff;
+        --bg: #ffffff;
+        --shadow: rgba(0, 0, 0, 0.25);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background: var(--bg);
+      }
+
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+
+      .top-bar {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.97);
+        border-radius: 16px;
+        box-shadow: 0 4px 10px var(--shadow);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px;
+        z-index: 1000;
+      }
+
+      .top-bar input {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 8px 10px;
+        width: 200px;
+        outline: none;
+      }
+
+      .top-bar button {
+        background-color: var(--primary);
+        border: none;
+        color: white;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      .top-bar button:hover {
+        background-color: #005ecc;
+      }
+
+      .action-btn {
+        position: absolute;
+        right: 15px;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px var(--shadow);
+        padding: 10px;
+        cursor: pointer;
+        z-index: 1000;
+      }
+
+      #locateBtn {
+        bottom: 30px;
+      }
+
+      #themeBtn {
+        bottom: 90px;
+      }
+
+      #infoCard {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        padding: 12px 16px;
+        box-shadow: 0 3px 8px var(--shadow);
+        text-align: center;
+        display: none;
+        z-index: 1000;
+      }
+
+      @media (max-width: 768px) {
+        .top-bar {
+          flex-direction: column;
+          align-items: stretch;
+          width: 90%;
+        }
+        .top-bar input {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <input id="start" placeholder="Enter source" />
+      <input id="end" placeholder="Enter destination" />
+      <button id="routeBtn">Find Route</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div id="map"></div>
+    <div class="action-btn" id="themeBtn">
+      <i class="mdi mdi-theme-light-dark" style="font-size: 22px"></i>
+    </div>
+    <div class="action-btn" id="locateBtn">
+      <i class="mdi mdi-crosshairs-gps" style="font-size: 22px"></i>
+    </div>
+
+    <div id="infoCard"></div>
+
+    <script>
+      // Initialize map
+      var map = L.map("map").setView([23.2599, 77.4126], 13);
+
+      var light = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        { attribution: "&copy; OpenStreetMap contributors" }
+      ).addTo(map);
+
+      var dark = L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        { attribution: "&copy; OpenStreetMap contributors" }
+      );
+
+      var routeControl = L.Routing.control({
+        waypoints: [],
+        routeWhileDragging: true,
+        lineOptions: { styles: [{ color: "#0078ff", weight: 5 }] },
+      }).addTo(map);
+
+      async function getCoords(query) {
+        const response = await fetch(
+          `https://photon.komoot.io/api/?q=${query}&limit=1`
+        );
+        const data = await response.json();
+        if (data.features.length === 0) throw new Error("Not found");
+        return data.features[0].geometry.coordinates.reverse();
+      }
+
+      document.getElementById("routeBtn").onclick = async () => {
+        const start = document.getElementById("start").value;
+        const end = document.getElementById("end").value;
+        if (!start || !end) return alert("Enter both fields!");
+
+        try {
+          const [startCoords, endCoords] = await Promise.all([
+            getCoords(start),
+            getCoords(end),
+          ]);
+
+          routeControl.setWaypoints([
+            L.latLng(startCoords[0], startCoords[1]),
+            L.latLng(endCoords[0], endCoords[1]),
+          ]);
+
+          // Display info card
+          const info = document.getElementById("infoCard");
+          info.style.display = "block";
+          info.innerHTML = `<strong>Route:</strong> ${start} → ${end}<br><small>Distance & time calculating...</small>`;
+        } catch (e) {
+          alert("Could not find one or both locations.");
+        }
+      };
+
+      // Clear route
+      document.getElementById("clearBtn").onclick = () => {
+        routeControl.setWaypoints([]);
+        document.getElementById("infoCard").style.display = "none";
+      };
+
+      // Locate user
+      document.getElementById("locateBtn").onclick = () =>
+        map.locate({ setView: true, maxZoom: 16 });
+
+      map.on("locationfound", (e) => {
+        L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
+      });
+
+      // Theme toggle
+      let darkMode = false;
+      document.getElementById("themeBtn").onclick = () => {
+        if (darkMode) {
+          map.removeLayer(dark);
+          light.addTo(map);
+        } else {
+          map.removeLayer(light);
+          dark.addTo(map);
+        }
+        darkMode = !darkMode;
+      };
+
+      // Show route summary (distance/time)
+      routeControl.on("routesfound", function (e) {
+        var route = e.routes[0];
+        var summary = route.summary;
+        var info = document.getElementById("infoCard");
+        info.innerHTML = `
+          <strong>Distance:</strong> ${(summary.totalDistance / 1000).toFixed(
+            2
+          )} km<br>
+          <strong>Time:</strong> ${(summary.totalTime / 60).toFixed(1)} min
+        `;
+      });
+    </script>
+  </body>
+</html>
