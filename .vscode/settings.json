@@ -6,13 +6,14 @@
                 "enableSsl": "Disabled"
             },
             "ssh": "Disabled",
-            "previewLimit": 50,
+            "previewLimit": 100,
             "server": "localhost",
             "port": 3306,
             "driver": "MySQL",
-            "name": "Local MYSQL",
-            "database": "my_auth_db",
-            "username": "root"
+            "name": "localhost",
+            "database": "local_auth",
+            "username": "root",
+            "password": ""
         }
     ]
 }

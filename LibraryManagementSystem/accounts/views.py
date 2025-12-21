@@ -1,63 +1,50 @@
-from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from django.contrib.auth.models import User
-from accounts.serializers import RegisterSerializer, LoginSerializer, UserSerializer
-from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import get_user_model, authenticate
 
-# Create your views here.
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
-# View for the registation
+User = get_user_model()
 
 
+# -------- Register --------
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
 
-class LoginView(generics.CreateAPIView):
+# -------- Login --------
+class LoginView(APIView):
+    permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
 
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            user_serializer = UserSerializer(user)
-            return Response(
-                {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                    'user': user_serializer.data
-                }
-            )
+        refresh = RefreshToken.for_user(user)
+        user_serializer = UserSerializer(user)
 
-        else:
-            return Response({
-                'details': 'Invalid Credentials'
-            }, status=401
-            )
-
-# for the dashboard
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': user_serializer.data
+        })
 
 
+# -------- Dashboard --------
 class Dashboard(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         user = request.user
-        user_serializer = UserSerializer(user)
-        return Response(
-            {
-                'message': 'Welcome to Dashboard',
-                'user': user_serializer.data
-            },
-            status=200
-        )
+        serializer = UserSerializer(user)
+        return Response({
+            'message': 'Welcome to the Dashboard!',
+            'user': serializer.data
+        })

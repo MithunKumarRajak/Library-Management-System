@@ -1,50 +1,52 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model, authenticate
 from .models import Role, UserRole
 
-# Serializers for User Registration
+User = get_user_model()
 
-
+# ---------- User Serializer ----------
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User  # Assuming User model is imported or defined elsewhere
-        fields = ('id', 'username', 'email', 'date_joined')
-
-#  Serializers for User Login
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'date_joined')
 
 
+# ---------- Register Serializer ----------
 class RegisterSerializer(serializers.ModelSerializer):
     role = serializers.CharField(write_only=True, required=False)
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User  # Assuming User model is imported or defined elsewhere
-        fields = ('first_name', 'last_name', 'username',
-                  'email', 'password', 'role')
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email', 'password', 'role')
 
     def create(self, validated_data):
         role_name = validated_data.pop('role', None)
-        password = validated_data.pop('password', None)
-        first_name = validated_data.pop('first_name', '')
-        last_name = validated_data.pop('last_name', '')
-        username = validated_data.get('username')
-        email = validated_data.get('email')
+        password = validated_data.pop('password')
+        user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
 
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name
-        )
         if role_name:
-            role, created = Role.objects.get_or_create(name=role_name)
+            role, _ = Role.objects.get_or_create(name=role_name)
             UserRole.objects.create(user=user, role=role)
+
         return user
 
-# Serializer for Login
 
-
+# ---------- Login Serializer ----------
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        user = authenticate(email=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Invalid email or password.")
+
+        data['user'] = user
+        return data
