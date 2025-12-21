@@ -1,4 +1,118 @@
-# Library-Management-System
+# Library Management System
+
+A Django-based web application for managing library operations, including book cataloging, user accounts, notices, and maps integration.
+
+## Features
+
+- User authentication and accounts
+- Book management system
+- Notice board for announcements
+- Interactive maps
+- REST API with JWT authentication
+- Email notifications
+
+## Setup Instructions
+
+### Prerequisites
+
+- Python 3.8+
+- Virtual environment (recommended)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <your-repo-url>
+   cd LibraryManagementSystem
+   ```
+
+2. **Create and activate virtual environment**
+
+   ```bash
+   python -m venv env
+   # On Windows
+   env\Scripts\activate
+   # On macOS/Linux
+   source env/bin/activate
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Environment Variables**
+
+   Create a `.env` file in the project root and add the following variables:
+
+   ```env
+   SECRET_KEY=your_django_secret_key_here
+   EMAIL_HOST_USER=your_email@gmail.com
+   EMAIL_HOST_PASSWORD=your_email_app_password
+   DEBUG=True
+   ```
+
+   **Note:** Never commit the `.env` file to version control. It's already included in `.gitignore`.
+
+5. **Run migrations**
+
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Create superuser (optional)**
+
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+7. **Run the development server**
+
+   ```bash
+   python manage.py runserver
+   ```
+
+   Visit `http://127.0.0.1:8000/` in your browser.
+
+## Project Structure
+
+```
+LibraryManagementSystem/
+├── accounts/          # User authentication app
+├── books/            # Book management app
+├── noticeBoard/      # Notice board app
+├── maps/             # Maps integration app
+├── static/           # Static files
+├── templates/        # HTML templates
+├── manage.py         # Django management script
+└── LibraryManagementSystem/  # Main project settings
+```
+
+## API Endpoints
+
+The application includes REST API endpoints for:
+
+- User registration and authentication
+- Book CRUD operations
+- Notice management
+
+API documentation available at `/api/` when running the server.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+---
 
 ## Django + Bootstrap Carousel Debug Summary
 
@@ -94,10 +208,13 @@ Always double-check:
 - `{% load %}` syntax (no extra spaces)
 - `{% block %}`, `{% endblock %}` structure
 - `{% comment %} ... {% endcomment %}` usage
+
 -------------------------------------------------------------------------------------------------------------
+
 # 🛠️ Django 404 Handling Summary
 
 ## 🔎 What is a 404?
+
 - A **404 error** means "Page Not Found" — the requested URL doesn’t match any defined route.
 - Django provides two main ways to customize how 404s are displayed.
 
@@ -106,6 +223,7 @@ Always double-check:
 ## 📌 Methods of Handling 404
 
 ### 1. Static Template (`404.html`)
+
 - Place a file named `404.html` inside your `templates/` directory.
 - Django automatically renders it when:
   - `DEBUG = False`
@@ -208,6 +326,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 ```
 
 ### Usage in Code
+
 - Used during `collectstatic`
 - Generates hashed filenames  
   Example: `style.css → style.83hd9f.css`
@@ -215,6 +334,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 - Used by WhiteNoise to serve files
 
 ### Why It Is Needed
+
 - Compresses static files (gzip/brotli)
 - Prevents browser cache issues
 - Improves load speed
