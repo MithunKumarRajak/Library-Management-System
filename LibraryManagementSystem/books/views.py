@@ -20,3 +20,6 @@ def books(request):
     - we’ll use {{ fruit }} to access it
     '''
     return render(request, 'books/books.html', books)
+
+def pricing(request):
+    return render(request, 'books/pricing.html')
