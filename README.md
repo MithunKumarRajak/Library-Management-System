@@ -94,4 +94,27 @@ Always double-check:
 - `{% load %}` syntax (no extra spaces)
 - `{% block %}`, `{% endblock %}` structure
 - `{% comment %} ... {% endcomment %}` usage
+-------------------------------------------------------------------------------------------------------------
+# 🛠️ Django 404 Handling Summary
+
+## 🔎 What is a 404?
+- A **404 error** means "Page Not Found" — the requested URL doesn’t match any defined route.
+- Django provides two main ways to customize how 404s are displayed.
+
+---
+
+## 📌 Methods of Handling 404
+
+### 1. Static Template (`404.html`)
+- Place a file named `404.html` inside your `templates/` directory.
+- Django automatically renders it when:
+  - `DEBUG = False`
+  - No matching URL is found
+- Simple and quick, but limited to static content.
+
+```html
+<!-- templates/404.html -->
+<h2>Oops! Page Not Found</h2>
+<p>The page you’re looking for doesn’t exist.</p>
+<a href="/">Back to Home</a>
 
