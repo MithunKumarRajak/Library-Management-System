@@ -380,3 +380,164 @@ handler404 = 'LibraryManagementSystem.views.handler404'
 When `DEBUG=False`, Django stops serving static files; using `STATIC_ROOT`, `collectstatic`, and WhiteNoise with compressed manifest storage fixes missing images and broken custom error pages.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
+
+# Django Email Sending (send_mail → EmailMessage)
+
+This file documents how email sending was implemented in Django, common mistakes faced, and the final correct solution with CC, BCC, and attachments.
+
+---
+
+## 1. send_mail() – Initial Attempt
+
+### ❌ Wrong Usage
+```python
+send_mail(
+    subject="Hello",
+    body="Test email",
+    from_email="noreply@domain.com",
+    to=["test@example.com"]
+)
+```
+
+**Error**
+```
+TypeError: send_mail() got an unexpected keyword argument 'to'
+
+
+```
+
+# Quick Rule of Thumb
+Use send_mail() → message + recipient_list
+
+Use EmailMessage → body + to
+
+### ✅ Correct Usage
+```python
+send_mail(
+    subject="Hello",
+    message="Test email",
+    from_email="noreply@domain.com",
+    recipient_list=["test@example.com"]
+)
+```
+
+---
+
+## 2. Why EmailMessage?
+
+`send_mail()` supports only simple emails.  
+For **CC, BCC, attachments**, Django recommends `EmailMessage`.
+
+---
+
+## 3. EmailMessage with CC & BCC
+
+```python
+from django.core.mail import EmailMessage
+
+email = EmailMessage(
+    subject="Hello from Django",
+    body="Test email with CC and BCC",
+    from_email="noreply@domain.com",
+    to=["main@example.com"],
+    cc=["copy@example.com"],
+    bcc=["hidden@example.com"]
+)
+
+email.send()
+```
+
+---
+
+## 4. Common Errors & Fixes
+
+### ❌ MIMEPart.__init__ error
+**Cause:** Used Python `email.mime`  
+**Fix:** Always import from Django
+```python
+from django.core.mail import EmailMessage
+```
+
+---
+
+### ❌ attach_file not found
+**Cause:** Imported Python’s `email` module  
+**Fix:** Use Django’s EmailMessage
+
+---
+
+### ❌ NameError: email not defined
+**Fix**
+```python
+email = EmailMessage(...)
+email.attach_file("path/to/file")
+```
+
+---
+
+## 5. Attachments (Correct Way)
+
+### ❌ Wrong
+```python
+email.attach_file("media/images/file.png")
+```
+
+### ✅ Correct
+```python
+import os
+from django.conf import settings
+
+file_path = os.path.join(settings.MEDIA_ROOT, "images", "file.png")
+if os.path.exists(file_path):
+    email.attach_file(file_path)
+```
+
+---
+
+## 6. Project Structure (Example)
+
+```
+LibraryManagementSystem/
+├── media/
+│   └── images/
+│       └── file.png
+├── manage.py
+```
+
+---
+
+## 7. Final Working Django View
+
+```python
+from django.core.mail import EmailMessage
+from django.http import HttpResponse
+import os
+from django.conf import settings
+
+def send_test_email(request):
+    email = EmailMessage(
+        subject="Hello from Django",
+        body="Email with CC, BCC and attachment",
+        from_email="noreply@domain.com",
+        to=["test@example.com"],
+        cc=["copy@example.com"],
+        bcc=["hidden@example.com"]
+    )
+
+    file_path = os.path.join(settings.MEDIA_ROOT, "images", "file.png")
+    if os.path.exists(file_path):
+        email.attach_file(file_path)
+
+    email.send()
+    return HttpResponse("Email Sent Successfully")
+```
+
+---
+
+## Key Points
+
+- `send_mail()` → simple emails only
+- `EmailMessage` → CC, BCC, attachments
+- Always use `django.core.mail`
+- Use `MEDIA_ROOT` for attachments
+- Check file existence before attaching

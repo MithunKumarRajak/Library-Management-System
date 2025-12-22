@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            padding: 12px 25px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Send Test Email</h2>
+    <p>Click the button to send email with CC, BCC & Attachment</p>
+
+    <form action="{% url 'send_test_email' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Send Email</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,18 +1,23 @@
+# environment variables
 .env
+# Python bytecode files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
+# Virtual environments
 env/
 venv/
 .venv/
+
 pip-log.txt
 pip-delete-this-directory.txt
 .tox/
 .coverage
 .coverage.*
 .cache
+
 nosetests.xml
 coverage.xml
 *.cover
@@ -23,3 +28,5 @@ coverage.xml
 .hypothesis
 db.sqlite3
 staticfiles/
+# Media files
+media/

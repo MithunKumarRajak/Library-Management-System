@@ -1,18 +1,30 @@
+import os
+from django.core.mail  import EmailMessage
 from django.http import HttpResponse
-from django.core.mail import send_mail
 from django.shortcuts import render
-
+from django.conf import settings 
 
 def handler404(request, exception):
     return render(request, 'handler404.html')
 
+# Creating a simple view to test email sending functionality
+
 
 def send_test_email(request):
-    send_mail(
+    email=EmailMessage(
         subject='Hello from Django',
-        message='This is a test email sent using Django.',
-        from_email=None,  # uses DEFAULT_FROM_EMAIL
-        recipient_list=['test@example.com'],
-        fail_silently=False,
+        body='This is a test email sent using Django.',
+        from_email=None,  # uses DEFAULT_FROM_EMAIL from settings.py or the EMAIL_HOST_USER
+        to=['esmartshopoffical@gmail.com'],
+        bcc=['mithunkumarrajak18plus@gmail.com'],
+        cc=['singalkumar1210@gmail.com'],
+
     )
+    file_path = os.path.join(settings.MEDIA_ROOT, "pdf/resume.pdf")
+    email.attach_file(file_path)
+    email.send()
     return HttpResponse("Email Sent Successfully!")
+
+
+def email_page(request):
+    return render(request, 'email/send_email.html')

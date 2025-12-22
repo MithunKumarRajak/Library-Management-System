@@ -20,7 +20,7 @@ from django.urls import path, include
 from accounts.views import RegisterView, LoginView, Dashboard
 from maps.views import map_view
 # Import the send_test_email view
-from .views import send_test_email
+from .views import email_page, send_test_email
 
 # JWT Views
 from rest_framework_simplejwt.views import (
@@ -54,5 +54,7 @@ urlpatterns = [
     path('map/', map_view, name='map'),
 
     # Test email
+    path('email/', email_page, name='email_page'),
     path('send-email/', send_test_email, name='send_test_email'),
+    
 ]
