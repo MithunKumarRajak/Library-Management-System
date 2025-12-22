@@ -30,3 +30,7 @@ db.sqlite3
 staticfiles/
 # Media files
 media/
+
+# IDEs and editors
+.vscode/
+
