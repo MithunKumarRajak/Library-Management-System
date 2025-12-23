@@ -1,6 +1,9 @@
 from django.urls import path
-from home.views import message_view
+from . import views
 
 urlpatterns = [
-    path('', message_view, name='message'),
+    path('', views.home, name='home'),
+    path('manual/', views.message_manual, name='message_manual'),
+    path('form/', views.message_form, name='message_form'),
+    path('modelform/', views.message_modelform, name='message_modelform'),
 ]
