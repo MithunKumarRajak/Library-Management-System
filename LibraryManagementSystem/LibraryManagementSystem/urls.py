@@ -21,6 +21,8 @@ from accounts.views import RegisterView, LoginView, Dashboard
 from maps.views import map_view
 # Import the send_test_email view
 from .views import email_page, send_test_email
+# Import the message view
+from home.views import message_view
 
 # JWT Views
 from rest_framework_simplejwt.views import (
@@ -56,5 +58,6 @@ urlpatterns = [
     # Test email
     path('email/', email_page, name='email_page'),
     path('send-email/', send_test_email, name='send_test_email'),
-    
+    # Home for message form
+    path ('home/', include('home.urls')),    
 ]

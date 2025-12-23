@@ -390,6 +390,7 @@ This file documents how email sending was implemented in Django, common mistakes
 ## 1. send_mail() – Initial Attempt
 
 ### ❌ Wrong Usage
+
 ```python
 send_mail(
     subject="Hello",
@@ -400,6 +401,7 @@ send_mail(
 ```
 
 **Error**
+
 ```
 TypeError: send_mail() got an unexpected keyword argument 'to'
 
@@ -407,11 +409,13 @@ TypeError: send_mail() got an unexpected keyword argument 'to'
 ```
 
 # Quick Rule of Thumb
+
 Use send_mail() → message + recipient_list
 
 Use EmailMessage → body + to
 
 ### ✅ Correct Usage
+
 ```python
 send_mail(
     subject="Hello",
@@ -451,9 +455,11 @@ email.send()
 
 ## 4. Common Errors & Fixes
 
-### ❌ MIMEPart.__init__ error
+### ❌ MIMEPart.**init** error
+
 **Cause:** Used Python `email.mime`  
 **Fix:** Always import from Django
+
 ```python
 from django.core.mail import EmailMessage
 ```
@@ -461,13 +467,16 @@ from django.core.mail import EmailMessage
 ---
 
 ### ❌ attach_file not found
+
 **Cause:** Imported Python’s `email` module  
 **Fix:** Use Django’s EmailMessage
 
 ---
 
 ### ❌ NameError: email not defined
+
 **Fix**
+
 ```python
 email = EmailMessage(...)
 email.attach_file("path/to/file")
@@ -478,11 +487,13 @@ email.attach_file("path/to/file")
 ## 5. Attachments (Correct Way)
 
 ### ❌ Wrong
+
 ```python
 email.attach_file("media/images/file.png")
 ```
 
 ### ✅ Correct
+
 ```python
 import os
 from django.conf import settings
@@ -542,7 +553,6 @@ def send_test_email(request):
 - Use `MEDIA_ROOT` for attachments
 - Check file existence before attaching
 
-
 -------------------------------------------------------------------------------------------
 Django Generic Views
 
@@ -586,6 +596,7 @@ class BookDetailView(DetailView):
     template_name = "books/book_detail.html"
 
 # urls.py
+
 from django.urls import path
 from .views import BookListView, BookDetailView
 
@@ -619,3 +630,126 @@ Use ModelForms + Generic Views for powerful CRUD APIs.
 Generic Views are not a replacement for FBVs but a complement. They help developers write cleaner, faster, and more maintainable code while still allowing customization when needed.
 
 --------------------------------------------------------------------------------------------
+
+# Django Form Data Not Saving – Summary
+
+## 📌 Issue Faced
+
+While using a **Django Form** (`MessageForm`), the form was:
+
+- Accepting user input
+- Validating data correctly
+
+But ❌ **data was NOT saved in the database** and did not appear in the Django Admin panel.
+
+---
+
+## ❓ Why This Happened
+
+- A normal **Django Form** is **NOT connected to any database model**.
+- Django does not know **which table** the form data should be saved into.
+- Therefore:
+  - Form → input + validation only
+  - No automatic database save
+
+---
+
+## ✅ Correct Understanding
+
+- **Form**
+  - Handles input
+  - Validates data
+  - ❌ Does NOT save data automatically
+
+- To save data:
+  - You must create a **Model**
+  - Then manually insert data using `form.cleaned_data`
+
+---
+
+## 💾 Manual Save Solution (Form → Model → Database)
+
+### Model
+
+```python
+from django.db import models
+
+class Message(models.Model):
+    name = models.CharField(max_length=50)
+    email = models.EmailField()
+    message = models.TextField()
+
+    def __str__(self):
+        return self.name
+````
+
+### View (Manual Save)
+
+```python
+from .models import Message
+
+def message_view(request):
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            Message.objects.create(
+                name=form.cleaned_data['name'],
+                email=form.cleaned_data['email'],
+                message=form.cleaned_data['message']
+            )
+            return render(request, 'home/success.html')
+    else:
+        form = MessageForm()
+    return render(request, 'home/message.html', {'form': form})
+```
+
+✔ Data is now saved in the database
+✔ Data is visible in Django Admin
+
+---
+
+## 🔑 Final Summary
+
+- ✅ **Django Form**
+  → Input + Validation only
+  → Database save must be done manually
+
+- ✅ To save Form data:
+
+  - Create a Model
+  - Use `form.cleaned_data`
+  - Call `Model.objects.create(...)`
+
+- 🚀 Shortcut:
+
+  - Use **ModelForm**
+  - Just call `form.save()`
+
+---
+
+### 📌 One-Line Conclusion
+
+> Django `Form` does not save data by default — saving requires a Model and manual database logic, or switching to `ModelForm`.
+
+----------------------------------------------------------------------------------------------------
+# Django URL Name Error (NoReverseMatch) – Summary
+
+## 📌 Issue Faced
+
+In the Django project, a navigation link in the template was not working and raised a
+**NoReverseMatch** error.
+🔑 Key Learnings
+
+{% url 'name' %} works only if a URL with that name exists
+
+URL name and {% url %} must match exactly
+
+path('', ...) still needs a proper name if used in templates
+
+One app can have multiple named routes under the same prefix
+---------------------------------------------------------------
+
+{{ form.as_p }} is a shortcut that renders each Django form field wrapped in <p> tags, making forms quick to display and neatly formatted in templates.
+
+-------------------------------------------------------------------
+
